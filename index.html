@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>Document</title>
+   <script src="npm/index.js"></script>
+   <meta name="description" content="Document sample">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+</head>
+<body>   
+   <button onclick="router.goto('/')">route /</button>
+   <button onclick="router.goto('/test')">route /test</button>
+   <button onclick="router.goto('/sample/1/admin/2')">route /sample/1/admin/2</button>
+
+   <slot route="/sample/:id/admin/:count" src="sample.html">loading...</slot>
+   <slot route="/test" src="https://jsonplaceholder.typicode.com">loading..</slot>
+
+   <script>
+      function onRoute(url) { router.match('') }
+   </script>
+</body>
+</html>  
