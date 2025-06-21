@@ -1,14 +1,12 @@
-# HTML gateway
+# Multi SPA
 
 An agnostic micro-lib for microfrontend with web standard approach.
 
-* **orchestration**: routing and inclusion
-* **prefetching**: all content is loaded
+* **orchestration**: routing and inclusion support
+* **prefetching**: all content is preloaded
 * **isolation**: shadow dom isolation
 * **fallback**: fallback HTML content
 * **routing**: static and dynamic route
-* **state**: shared states with globals
-* **aids**: api facades for routing
 
 ## Installation
 
@@ -17,8 +15,8 @@ An agnostic micro-lib for microfrontend with web standard approach.
 <html lang="en">
 <head>
    <meta charset="UTF-8">
-   <title>HTML Container</title>   
-   <script src='html-gateway.min.js'></script>
+   <title>Multi SPA</title>   
+   <script src='multi-spa.min.js'></script>
 </head>
 <body>etc...</body>
 </html>
@@ -31,12 +29,12 @@ Client-sider support with script loading and parser to server-side rendering.
 ```ts
 'use server'
 
-import { parser } from 'html-gateway'
+import { parser } from 'multi-spa'
 
 await parser(html).build('/build')
 ```
 
-## Sloting, routing and fallbacks
+## Routing and fallbacks
 
 HTML+ slot supports merged frontends withwith loading content as fallback. It supports declarative static and dynamic routes.
 
@@ -50,6 +48,15 @@ HTML+ slot supports merged frontends withwith loading content as fallback. It su
 
 ## Metatags reallocation
 
-All metatag and head content in slot is dynamically allocated to html page. But the SEO only impacted with this metatag reallocated in server by server-side html-container.
+Metatags are  dynamically reallocated to html page. To work properly with SEO, it demands the usasge of server-side multi-spa parser.
 
+## Router facade
 
+Simple global router object facade to location and history.
+
+```ts
+router.now 
+router.goto('/admin')
+router.params('/admin/:id')
+router.queries // URLSearchParams as object
+```
