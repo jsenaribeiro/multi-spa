@@ -7,14 +7,26 @@ var router = {
     history.pushState({}, "", route);
   },
   match(route) {
-    const names = [];
-    const regex = new RegExp("^" + route.replace(/:([^/]+)/g, (_, k) => (names.push(k), "([^/]+)")) + "$");
-    const result = location.pathname.match(regex);
-    const entries = result && names.map((k, i) => [k, result[i + 1]]);
-    const params = entries ? Object.fromEntries(entries) : {};
-    return { routed: !!result, params };
+    return matching(route).routed;
+  },
+  params(route) {
+    return matching(route).params;
+  },
+  get queries() {
+    const search = window.location.search;
+    const entries = new URLSearchParams(search).entries();
+    const queries = Object.fromEntries(entries);
+    return queries;
   }
 };
+function matching(route) {
+  const names = [];
+  const regex = new RegExp("^" + route.replace(/:([^/]+)/g, (_, k) => (names.push(k), "([^/]+)")) + "$");
+  const result = location.pathname.match(regex);
+  const entries = result && names.map((k, i) => [k, result[i + 1]]);
+  const params = entries ? Object.fromEntries(entries) : {};
+  return { routed: !!result, params };
+}
 
 // src/index.ts
 (function(history2) {
@@ -27,7 +39,7 @@ var router = {
 })(window.history);
 var metatags = Array.from(document.querySelectorAll("meta")).map((node) => node.outerHTML);
 document["metatags"] = [...new Set(metatags)].reduce((last, next) => last + next, "");
-document["old"] = document.title;
+document["ttl"] = document.title;
 function initial(e) {
   document.querySelectorAll("slot[src]").forEach((x) => eachSlot(x));
 }
@@ -39,7 +51,7 @@ function eachSlot(slot) {
   const done = slot.getAttribute("done");
   const route = slot.getAttribute("route") || "";
   const regexMT = /<title>.+?<\/title>|<meta .+?\/>|<meta .+?>/g;
-  const { routed } = router.match(route);
+  const isRouted = router.match(route);
   if (!src)
     return;
   if (done)
@@ -51,7 +63,7 @@ function eachSlot(slot) {
     const shadow = div.attachShadow({ mode: "open" });
     const metatags2 = Array.from(html.matchAll(regexMT)).filter((value) => !!value && !!value[0]).reduce((last, next) => last + next[0], "");
     slot.innerHTML = "";
-    slot.hidden = !routed;
+    slot.hidden = !isRouted;
     slot.setAttribute("done", "true");
     slot.setAttribute("metatags", metatags2);
     slot["metatags"] = metatags2;
@@ -59,7 +71,7 @@ function eachSlot(slot) {
     shadow.innerHTML = html;
   }
   function switchRoute() {
-    slot.hidden = !routed;
+    slot.hidden = !isRouted;
     if (slot.hidden)
       return;
     var oldHead = document.head.innerHTML;
@@ -67,7 +79,7 @@ function eachSlot(slot) {
     if (slot["metatags"] && !slot.hidden)
       newHead += slot["metatags"];
     if (!document.head.innerHTML.includes("<title>"))
-      newHead += `<title>${document["old"]}</title>`;
+      newHead += `<title>${document["ttl"]}</title>`;
     const metaregex = /<meta name=['"](.+?)['"].+?\/*>/g;
     const oldMetatags = document["metatags"];
     for (const found of oldMetatags.matchAll(metaregex)) {

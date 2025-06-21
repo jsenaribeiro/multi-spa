@@ -36,7 +36,7 @@ await parser(html).build('/build')
 
 ## Routing and fallbacks
 
-HTML+ slot supports merged frontends withwith loading content as fallback. It supports declarative static and dynamic routes.
+HTML+ slot supports merged frontends inner content as fallback with optional declarative routing (static and dynamic routes).
 
 ```html
 <body>
